@@ -8,6 +8,8 @@ var gulp = require('gulp'),
     glob = require('glob'),
     imagemin = require('gulp-imagemin'),
     del = require('del'),
+    gulpif = require('gulp-if'),
+    sprite = require('css-sprite').stream,
     reload = browserSync.reload;
 
 
@@ -48,11 +50,27 @@ gulp.task('imagemin', function() {
 });
 /***********CLEAN***********/
 gulp.task('clean', del.bind(null, ['.tmp', 'app/*'], {dot: true}));
+/*********SPRITES*************/
+gulp.task('sprites', function () {
+    return gulp.src('src/sprites/*.png')
+    .pipe(sprite({
+      name: 'img-sprites.png',
+      style: 'sprites.styl',
+      prefix: 'ic',
+      orientation : 'vertical',
+      margin: 0,
+      cssPath: '../img',
+      processor: 'stylus'
+    }))
+    .pipe(gulpif('*.png', gulp.dest('src/img/')))
+    .pipe(gulpif('*.styl', gulp.dest('src/styl/')));  
+});
 /*********WATCH AND DEFAULT************/
 gulp.task('watch', function () {
     gulp.watch('src/styl/*.styl', ['css']);
     gulp.watch('views/*.jade', ['templates']);
     gulp.watch(['app/*.html'], reload);
     gulp.watch('src/img/*.{jpg,png,gif}', ['imagemin']);
+    /*gulp.watch('src/sprites/*.png', ['sprites']);*/
 });
-gulp.task('default', ['imagemin','clean','css','templates','browser-sync','watch']);
+gulp.task('default', ['sprites','imagemin','clean','css','templates','browser-sync','watch']);
