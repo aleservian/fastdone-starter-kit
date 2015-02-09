@@ -10,7 +10,10 @@ var gulp = require('gulp'),
     del = require('del'),
     gulpif = require('gulp-if'),
     sprite = require('css-sprite').stream,
-    reload = browserSync.reload;
+    reload = browserSync.reload,
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat'),
+    bootstrap = require('bootstrap-styl');
 
 
 /*********BROWSER SYNC*************/
@@ -31,9 +34,9 @@ gulp.task('templates', function() {
 });
 /********STYLUS**********/
 gulp.task('css', function(){
-    gulp.src('src/styl/sty.styl')
+    gulp.src('src/styl/main.styl')
     .pipe(stylus({
-        use:[koutoSwiss()]
+        use:[koutoSwiss(),bootstrap()]
     }))
     .pipe(uncss({
             html: glob.sync('app/*.html')
@@ -65,12 +68,20 @@ gulp.task('sprites', function () {
     .pipe(gulpif('*.png', gulp.dest('src/img/')))
     .pipe(gulpif('*.styl', gulp.dest('src/styl/')));  
 });
+/***********JAVASCRIPT*************/
+gulp.task('js', function() {
+  gulp.src('src/js/**/*.js')
+    .pipe(concat('main.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('app/assets/js'))
+});
 /*********WATCH AND DEFAULT************/
 gulp.task('watch', function () {
     gulp.watch('src/styl/*.styl', ['css']);
     gulp.watch('views/*.jade', ['templates']);
     gulp.watch(['app/*.html'], reload);
     gulp.watch('src/img/*.{jpg,png,gif}', ['imagemin']);
-    /*gulp.watch('src/sprites/*.png', ['sprites']);*/
+    gulp.watch('src/js/**/*.js', ['js']);
+    gulp.watch('src/sprites/*.png', ['sprites']);
 });
-gulp.task('default', ['sprites','imagemin','clean','css','templates','browser-sync','watch']);
+gulp.task('default', ['js','sprites','imagemin'/*,'clean'*/,'css','templates','browser-sync','watch']);
