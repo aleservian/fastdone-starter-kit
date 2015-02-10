@@ -57,7 +57,7 @@ gulp.task('clean', del.bind(null, ['.tmp', 'app/*'], {dot: true}));
 gulp.task('sprites', function () {
     return gulp.src('src/sprites/*.png')
     .pipe(sprite({
-      name: 'img-sprites.png',
+      name: 'img-sprites',
       style: 'sprites.styl',
       prefix: 'ic',
       orientation : 'vertical',
@@ -78,7 +78,7 @@ gulp.task('js', function() {
 /*********WATCH AND DEFAULT************/
 gulp.task('watch', function () {
     gulp.watch('src/styl/*.styl', ['css']);
-    gulp.watch('views/*.jade', ['templates']);
+    gulp.watch('views/*.jade', ['templates','css']);
     gulp.watch(['app/*.html'], reload);
     gulp.watch('src/img/*.{jpg,png,gif}', ['imagemin']);
     gulp.watch('src/js/**/*.js', ['js']);
